@@ -1,0 +1,622 @@
+@import "tailwindcss";
+
+/* =====================================================================
+   Indriya — icy-blue / pure-white atelier design tokens
+   (Token VALUES are retuned to cool tones; every existing
+   bg-emerald / text-gold / bg-cream utility re-skins automatically.)
+   ===================================================================== */
+:root {
+  --cream: #f4f8fc;   /* app background — icy near-white */
+  --ivory: #ffffff;   /* panels / cards */
+  --sand: #e9f1fa;    /* subtle fills */
+  --emerald: #173a5e; /* primary ink-blue (was emerald) */
+  --emerald-soft: #21527f;
+  --gold: #5f8fbf;    /* steel-blue accent (was warm gold) */
+  --gold-soft: #a7c8e8;
+  --charcoal: #16222f;/* primary text — cool slate */
+  --muted: #65788d;   /* secondary text */
+  --line: #d9e6f2;    /* hairline borders */
+
+  /* icy accents */
+  --ice: #cfe3f3;
+  --ice-deep: #173a5e;
+  --ice-line: #3a78b4;
+  --frost: #5b7790;
+}
+
+@theme inline {
+  --color-cream: var(--cream);
+  --color-ivory: var(--ivory);
+  --color-sand: var(--sand);
+  --color-emerald: var(--emerald);
+  --color-emerald-soft: var(--emerald-soft);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-charcoal: var(--charcoal);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+
+  --color-background: var(--cream);
+  --color-foreground: var(--charcoal);
+
+  --font-serif: var(--font-cormorant);
+  --font-sans: var(--font-inter);
+}
+
+html,
+body {
+  background: var(--cream);
+  color: var(--charcoal);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-cormorant), Georgia, serif;
+}
+
+/* =====================================================================
+   Liquid Glass — reusable material + controls
+   ===================================================================== */
+.lg-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 14px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  -webkit-backdrop-filter: blur(16px) saturate(1.6);
+  backdrop-filter: blur(16px) saturate(1.6);
+  transition:
+    transform 0.16s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.22s ease,
+    background 0.22s ease,
+    border-color 0.22s ease;
+  cursor: pointer;
+}
+.lg-btn:active {
+  transform: translateY(1px) scale(0.99);
+}
+.lg-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* primary — graphite liquid glass (Apple / jewellabs recipe) */
+.lg-btn-primary {
+  color: #eaf1f9;
+  background: linear-gradient(
+    180deg,
+    rgba(42, 52, 70, 0.92) 0%,
+    rgba(20, 28, 42, 0.95) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 10px 30px rgba(10, 22, 42, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.3);
+}
+.lg-btn-primary:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(54, 66, 88, 0.95) 0%,
+    rgba(28, 38, 56, 0.97) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 16px 42px rgba(10, 22, 42, 0.44),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
+}
+
+/* ghost — clear liquid glass */
+.lg-btn-ghost {
+  color: #1b2c40;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(18, 44, 78, 0.12);
+  box-shadow:
+    0 8px 24px rgba(20, 50, 90, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+.lg-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.74);
+  border-color: rgba(18, 44, 78, 0.22);
+  transform: translateY(-1px);
+}
+
+/* glass icon button (round) */
+.lg-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: var(--frost);
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(18, 44, 78, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  backdrop-filter: blur(12px) saturate(1.4);
+  transition: transform 0.16s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.lg-icon:hover {
+  color: var(--ice-deep);
+  background: rgba(255, 255, 255, 0.74);
+  border-color: rgba(18, 44, 78, 0.2);
+  transform: translateY(-1px);
+}
+.lg-icon[data-active="true"] {
+  color: #d6304a;
+  background: rgba(214, 48, 74, 0.12);
+  border-color: rgba(214, 48, 74, 0.4);
+}
+
+/* frosted glass panel/surface */
+.lg-panel {
+  background: rgba(255, 255, 255, 0.62);
+  -webkit-backdrop-filter: blur(22px) saturate(1.3);
+  backdrop-filter: blur(22px) saturate(1.3);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 26px 64px rgba(20, 55, 94, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* subtle translucent rail (sidebars, docks, headers) */
+.lg-rail {
+  background: rgba(255, 255, 255, 0.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.25);
+  backdrop-filter: blur(20px) saturate(1.25);
+}
+
+/* glassy text field */
+.lg-field {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(120, 170, 215, 0.3);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.lg-field:focus-within,
+.lg-field:focus {
+  border-color: rgba(58, 120, 180, 0.55);
+  box-shadow: 0 0 0 4px rgba(58, 120, 180, 0.12);
+}
+
+/* glassy dropdown */
+.lg-select {
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 12px;
+  padding: 0.55rem 2rem 0.55rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ice-deep);
+  background-color: rgba(255, 255, 255, 0.55);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%235b7790' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 4.5l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  background-size: 0.72rem;
+  border: 1px solid rgba(18, 44, 78, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  backdrop-filter: blur(12px) saturate(1.4);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  cursor: pointer;
+}
+.lg-select:hover {
+  background-color: rgba(255, 255, 255, 0.74);
+}
+.lg-select:focus {
+  outline: none;
+  border-color: rgba(58, 120, 180, 0.5);
+  box-shadow:
+    0 0 0 4px rgba(58, 120, 180, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+/* liquid-glass range slider (brush size) */
+.lg-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 30px;
+  background: transparent;
+  cursor: pointer;
+}
+.lg-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(120, 160, 200, 0.28);
+  box-shadow: inset 0 1px 2px rgba(20, 50, 90, 0.18);
+}
+.lg-slider::-moz-range-track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(120, 160, 200, 0.28);
+}
+.lg-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -7px;
+  height: 22px;
+  width: 22px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffffff, #dbe7f3);
+  border: 1px solid rgba(18, 44, 78, 0.18);
+  box-shadow:
+    0 4px 12px rgba(20, 50, 90, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+.lg-slider::-moz-range-thumb {
+  height: 22px;
+  width: 22px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffffff, #dbe7f3);
+  border: 1px solid rgba(18, 44, 78, 0.18);
+  box-shadow:
+    0 4px 12px rgba(20, 50, 90, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+/* =====================================================================
+   Studio ambiance — soft icy mesh so glass reads against it
+   ===================================================================== */
+.studio-canvas {
+  position: relative;
+  background-color: #eef5fc;
+  background-image:
+    linear-gradient(rgba(58, 120, 180, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(58, 120, 180, 0.045) 1px, transparent 1px),
+    radial-gradient(56% 48% at 10% -4%, rgba(120, 180, 235, 0.18), transparent 60%),
+    radial-gradient(48% 56% at 102% 16%, rgba(150, 200, 240, 0.16), transparent 60%),
+    radial-gradient(60% 60% at 50% 116%, rgba(110, 170, 225, 0.14), transparent 62%),
+    linear-gradient(180deg, #f7fbff 0%, #eef5fc 100%);
+  background-size: 54px 54px, 54px 54px, auto, auto, auto, auto;
+}
+
+/* =====================================================================
+   Landing — blank-white, icy-blue atelier surface
+   ===================================================================== */
+.landing-page {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(125% 90% at 50% -12%, #ffffff 0%, #f5fafe 36%, #edf4fb 68%, #e7f0f9 100%);
+}
+
+.landing-page::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  content: "";
+  background-image:
+    linear-gradient(rgba(58, 120, 180, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(58, 120, 180, 0.05) 1px, transparent 1px);
+  background-size: 46px 46px;
+  -webkit-mask-image: radial-gradient(125% 78% at 50% 2%, #000 0%, transparent 72%);
+  mask-image: radial-gradient(125% 78% at 50% 2%, #000 0%, transparent 72%);
+  pointer-events: none;
+}
+
+.landing-page::after {
+  position: absolute;
+  top: -16%;
+  left: 50%;
+  z-index: 0;
+  width: min(960px, 94vw);
+  height: 760px;
+  content: "";
+  transform: translateX(-50%);
+  background:
+    radial-gradient(closest-side, rgba(150, 200, 240, 0.42), rgba(196, 222, 245, 0.12) 52%, transparent 74%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.landing-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.landing-hero {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: min(760px, calc(100vh - 150px));
+  text-align: center;
+}
+
+.landing-hero-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+}
+
+.landing-kicker {
+  margin-bottom: 26px;
+  color: var(--ice-line);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.36em;
+  text-transform: uppercase;
+}
+
+.landing-logo-lockup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(6px, 1.4vw, 16px);
+  margin: 0;
+}
+
+.landing-logo-mark {
+  display: block;
+  flex-shrink: 0;
+}
+
+.landing-logo-mark img {
+  display: block;
+  width: auto;
+  height: clamp(96px, 12vw, 168px);
+  filter:
+    grayscale(1) brightness(1.12) contrast(1.04)
+    drop-shadow(0 14px 24px rgba(82, 138, 190, 0.3))
+    drop-shadow(0 0 10px rgba(255, 255, 255, 0.78));
+}
+
+.landing-logo-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(8px, 1vw, 14px);
+}
+
+.landing-logo-name {
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-size: clamp(3.3rem, 9.2vw, 7rem);
+  font-weight: 600;
+  line-height: 0.84;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: linear-gradient(
+    180deg,
+    #c9d8e8 0%,
+    #ffffff 26%,
+    #8ea7c1 56%,
+    #eef4fa 76%,
+    #9cb2c9 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 2px 1px rgba(110, 145, 180, 0.28));
+}
+
+.landing-logo-subline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 3vw, 30px);
+  width: 100%;
+  padding-top: 6px;
+  border-top: 1px solid rgba(58, 120, 180, 0.22);
+  color: var(--ice-deep);
+  font-family: var(--font-inter), sans-serif;
+  font-size: clamp(0.58rem, 1.5vw, 0.86rem);
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.landing-logo-divider {
+  width: 1px;
+  height: 0.95em;
+  background: rgba(58, 120, 180, 0.45);
+}
+
+.landing-body {
+  margin-top: 30px;
+  max-width: 560px;
+  color: var(--frost);
+  font-size: 1.04rem;
+  line-height: 1.85;
+}
+
+.landing-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 38px;
+}
+
+/* landing CTAs — translucent Apple "liquid glass" (lets the field show through) */
+.landing-cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 54px;
+  padding-inline: 32px;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  -webkit-backdrop-filter: blur(22px) saturate(1.9);
+  backdrop-filter: blur(22px) saturate(1.9);
+  transition:
+    transform 0.18s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.24s ease,
+    background 0.24s ease,
+    border-color 0.24s ease;
+  cursor: pointer;
+}
+.landing-cta:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.landing-cta-primary {
+  color: #eef5fc;
+  background: linear-gradient(
+    180deg,
+    rgba(38, 60, 92, 0.55),
+    rgba(18, 33, 54, 0.62)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-top-color: rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 16px 36px rgba(14, 34, 62, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    inset 0 -10px 26px rgba(8, 22, 44, 0.22);
+}
+.landing-cta-primary:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(46, 72, 108, 0.64),
+    rgba(22, 40, 64, 0.7)
+  );
+  transform: translateY(-2px);
+  box-shadow:
+    0 22px 46px rgba(14, 34, 62, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -10px 26px rgba(8, 22, 44, 0.24);
+}
+
+.landing-cta-ghost {
+  color: #173a5e;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(120, 170, 215, 0.35);
+  border-top-color: rgba(255, 255, 255, 0.85);
+  box-shadow:
+    0 12px 28px rgba(28, 61, 94, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+.landing-cta-ghost:hover {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(58, 120, 180, 0.45);
+  transform: translateY(-2px);
+}
+
+.landing-step {
+  border: 1px solid rgba(58, 120, 180, 0.16);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.62);
+  padding: 24px;
+  box-shadow: 0 18px 42px rgba(28, 61, 94, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+}
+
+@media (max-width: 720px) {
+  .landing-logo-lockup {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .landing-logo-copy {
+    align-items: center;
+  }
+  .landing-logo-subline {
+    gap: 14px;
+    justify-content: center;
+  }
+  .landing-body {
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .landing-actions {
+    flex-direction: column;
+  }
+  .landing-primary-action,
+  .landing-secondary-action {
+    width: 100%;
+  }
+}
+
+/* =====================================================================
+   Logo Reveal — particle intro overlay
+   ===================================================================== */
+.logo-reveal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 100% at 50% 38%, #123257 0%, #0c2244 45%, #081730 100%);
+  opacity: 1;
+  transition: opacity 0.85s ease;
+}
+.logo-reveal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 50% at 50% 46%, transparent 40%, rgba(4, 12, 26, 0.5) 100%);
+  pointer-events: none;
+}
+.logo-reveal--hidden {
+  opacity: 0;
+}
+.logo-reveal__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* vibrant icy veil behind the sketch-pad glass (so transparency reads) */
+.sketch-veil {
+  background:
+    radial-gradient(40% 50% at 18% 12%, rgba(86, 156, 222, 0.55), transparent 60%),
+    radial-gradient(46% 56% at 86% 16%, rgba(150, 120, 220, 0.4), transparent 60%),
+    radial-gradient(50% 50% at 78% 92%, rgba(70, 190, 210, 0.42), transparent 62%),
+    radial-gradient(60% 60% at 28% 96%, rgba(60, 110, 200, 0.45), transparent 64%),
+    rgba(8, 22, 44, 0.55);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+/* login surface — icy gradient field */
+.auth-canvas {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(50% 46% at 16% 4%, rgba(120, 180, 235, 0.22), transparent 60%),
+    radial-gradient(46% 52% at 92% 22%, rgba(150, 200, 240, 0.2), transparent 60%),
+    linear-gradient(180deg, #f8fcff 0%, #eef5fc 100%);
+}
+
+/* thin divider used across the brand */
+.gold-rule {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--gold-soft),
+    transparent
+  );
+}
+
+::selection {
+  background: rgba(120, 175, 215, 0.5);
+  color: #0e2740;
+}
