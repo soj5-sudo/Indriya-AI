@@ -74,10 +74,10 @@ export default function LandingPage(): ReactElement {
 
           <div className="landing-actions">
             <Link href="/login" className="landing-cta landing-cta-primary">
-              Start designing
+              <span>Start designing</span>
             </Link>
             <a href="#how" className="landing-cta landing-cta-ghost">
-              How it works
+              <span>How it works</span>
             </a>
           </div>
         </div>

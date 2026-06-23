@@ -6,37 +6,35 @@ import { createClient } from "@/lib/supabase/client";
 
 export function ContactForm({ defaultName }: { defaultName: string }) {
   const router = useRouter();
-  const [name, setName] = useState(defaultName);
   const [code, setCode] = useState("+91");
   const [mobile, setMobile] = useState("");
-  const [country, setCountry] = useState("");
   const [state, setState] = useState("");
+  const [country, setCountry] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const digits = mobile.replace(/\D/g, "");
+  // Mobile must be exactly 10 digits.
   const valid =
-    digits.length >= 6 &&
-    digits.length <= 14 &&
-    code.trim().length > 0 &&
-    country.trim().length > 0 &&
-    state.trim().length > 0;
+    mobile.length === 10 &&
+    code.trim().length > 1 &&
+    state.trim().length > 0 &&
+    country.trim().length > 0;
 
   async function save() {
     if (!valid) {
-      setError("Please fill in your mobile number, country and state.");
+      setError("Enter a 10-digit mobile number, your state and country.");
       return;
     }
     setSaving(true);
     setError(null);
     const supabase = createClient();
+    // Merges into user_metadata — Google name/email stay untouched.
     const { error } = await supabase.auth.updateUser({
       data: {
-        full_name: name.trim() || undefined,
         dial_code: code.trim(),
-        phone: `${code.trim()} ${digits}`,
-        country: country.trim(),
+        phone: `${code.trim()} ${mobile}`,
         state: state.trim(),
+        country: country.trim(),
         contact_done: true,
       },
     });
@@ -50,58 +48,64 @@ export function ContactForm({ defaultName }: { defaultName: string }) {
   }
 
   const field =
-    "lg-field w-full rounded-xl px-3 py-2.5 text-sm text-charcoal outline-none placeholder:text-muted";
-  const lbl =
-    "block text-[11px] uppercase tracking-[0.2em] text-muted";
+    "lg-field rounded-xl px-3 py-2.5 text-sm text-charcoal outline-none placeholder:text-muted";
+  const lbl = "block text-[11px] uppercase tracking-[0.2em] text-muted";
 
   return (
     <div className="mt-7 text-left">
-      <label className={lbl}>Full name</label>
-      <input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Your name"
-        className={`${field} mt-1.5`}
-      />
+      {defaultName && (
+        <p className="mb-5 text-center text-sm text-muted">
+          Signed in as{" "}
+          <span className="font-medium text-charcoal">{defaultName}</span>
+        </p>
+      )}
 
-      <label className={`${lbl} mt-4`}>Mobile number</label>
+      <label className={lbl}>Mobile number</label>
       <div className="mt-1.5 flex gap-2">
         <input
           value={code}
-          onChange={(e) => setCode(e.target.value)}
+          onChange={(e) =>
+            setCode(e.target.value.replace(/[^\d+]/g, "").slice(0, 5))
+          }
           inputMode="tel"
           placeholder="+91"
-          className={`${field} w-20 shrink-0 text-center`}
+          className={`${field} w-[4.75rem] shrink-0 px-2 text-center`}
           aria-label="Country code"
         />
         <input
           value={mobile}
-          onChange={(e) => setMobile(e.target.value)}
-          inputMode="tel"
-          placeholder="98765 43210"
-          className={field}
+          onChange={(e) =>
+            setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))
+          }
+          onKeyDown={(e) => e.key === "Enter" && save()}
+          inputMode="numeric"
+          placeholder="10-digit number"
+          className={`${field} min-w-0 flex-1`}
           aria-label="Mobile number"
         />
       </div>
+      {mobile.length > 0 && mobile.length < 10 && (
+        <p className="mt-1 text-[11px] text-muted">{mobile.length}/10 digits</p>
+      )}
 
-      <div className="mt-4 grid grid-cols-2 gap-2">
-        <div>
-          <label className={lbl}>Country</label>
-          <input
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            placeholder="India"
-            className={`${field} mt-1.5`}
-          />
-        </div>
+      <div className="mt-4 grid grid-cols-2 gap-3">
         <div>
           <label className={lbl}>State</label>
           <input
             value={state}
             onChange={(e) => setState(e.target.value)}
+            placeholder="e.g. Maharashtra"
+            className={`${field} mt-1.5 w-full`}
+          />
+        </div>
+        <div>
+          <label className={lbl}>Country</label>
+          <input
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && save()}
-            placeholder="Maharashtra"
-            className={`${field} mt-1.5`}
+            placeholder="e.g. India"
+            className={`${field} mt-1.5 w-full`}
           />
         </div>
       </div>
@@ -111,12 +115,12 @@ export function ContactForm({ defaultName }: { defaultName: string }) {
       <button
         onClick={save}
         disabled={saving || !valid}
-        className="lg-btn lg-btn-primary mt-5 w-full px-5 py-2.5 text-sm"
+        className="lg-btn lg-btn-primary mt-6 w-full px-5 py-2.5 text-sm"
       >
         {saving ? "Saving…" : "Continue to the atelier"}
       </button>
       <p className="mt-3 text-center text-[11px] text-muted">
-        Used only by the customization team. Private to your account.
+        Shared only with the customization team. Private to your account.
       </p>
     </div>
   );

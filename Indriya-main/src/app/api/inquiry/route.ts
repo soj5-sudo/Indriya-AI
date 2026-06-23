@@ -76,6 +76,9 @@ export async function POST(request: Request) {
       (user.user_metadata?.full_name as string) ??
       (user.user_metadata?.name as string) ??
       null,
+    customerPhone: (user.user_metadata?.phone as string) ?? null,
+    customerState: (user.user_metadata?.state as string) ?? null,
+    customerCountry: (user.user_metadata?.country as string) ?? null,
     design: design
       ? {
           title: design.title ?? "Custom design",

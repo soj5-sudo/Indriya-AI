@@ -6,6 +6,9 @@ export type InquiryEmailData = {
   createdAt: string;
   submittedBy: string; // email
   submitterName?: string | null;
+  customerPhone?: string | null;
+  customerState?: string | null;
+  customerCountry?: string | null;
   design?: {
     title: string;
     imageUrl: string;
@@ -17,13 +20,13 @@ export type InquiryEmailData = {
 };
 
 const C = {
-  cream: "#fbf8f3",
+  cream: "#f4f8fc",
   ivory: "#ffffff",
-  emerald: "#0b4d3b",
-  gold: "#b08d57",
-  charcoal: "#2c2a26",
-  muted: "#7a756c",
-  line: "#e7dfd2",
+  emerald: "#173a5e",
+  gold: "#5f8fbf",
+  charcoal: "#16222f",
+  muted: "#65788d",
+  line: "#d9e6f2",
 };
 
 function esc(s: string): string {
@@ -100,6 +103,21 @@ export function renderInquiryEmail(d: InquiryEmailData): {
             From <strong style="color:${C.charcoal};">${esc(d.submitterName || d.submittedBy)}</strong>
             &lt;${esc(d.submittedBy)}&gt; · ${esc(when)}
           </p>
+          ${
+            d.customerPhone || d.customerState || d.customerCountry
+              ? `<p style="margin:6px 0 0;color:${C.charcoal};font-size:13px;">
+                   <strong>Mobile:</strong> ${esc(d.customerPhone || "—")}${
+                   d.customerState || d.customerCountry
+                     ? ` &nbsp;·&nbsp; <strong>Location:</strong> ${esc(
+                         [d.customerState, d.customerCountry]
+                           .filter(Boolean)
+                           .join(", ")
+                       )}`
+                     : ""
+                 }
+                 </p>`
+              : ""
+          }
         </td></tr>
 
         ${
@@ -154,6 +172,15 @@ export function renderInquiryEmail(d: InquiryEmailData): {
   const text = [
     `NEW CUSTOM DESIGN INQUIRY`,
     `From: ${d.submitterName || ""} <${d.submittedBy}>`,
+    d.customerPhone || d.customerState || d.customerCountry
+      ? `Mobile: ${d.customerPhone || "—"}${
+          d.customerState || d.customerCountry
+            ? ` · Location: ${[d.customerState, d.customerCountry]
+                .filter(Boolean)
+                .join(", ")}`
+            : ""
+        }`
+      : "",
     `When: ${when}`,
     ``,
     d.design ? `Design: ${title}` : `Design: (none selected)`,
@@ -190,17 +217,15 @@ export async function sendInquiryEmail(data: InquiryEmailData): Promise<{
   error?: string;
 }> {
   const apiKey = process.env.RESEND_API_KEY;
+  // To: the customization team (anik). CC: soj5@cornell.edu.
   const team = process.env.INQUIRY_NOTIFY_EMAIL ?? "deyanik2007@gmail.com";
+  const cc = process.env.INQUIRY_CC_EMAIL ?? "soj5@cornell.edu";
   const from = process.env.RESEND_FROM ?? "Indriya Atelier <onboarding@resend.dev>";
-  // Every inquiry goes to the team inbox and to soj5@cornell.edu (override the
-  // extra recipient with INQUIRY_CC_EMAIL). De-duped so we never email twice.
-  const extra = process.env.INQUIRY_CC_EMAIL ?? "soj5@cornell.edu";
-  const to = Array.from(new Set([team, extra]));
 
   if (!apiKey) {
     console.warn(
       "RESEND_API_KEY not set — inquiry saved but email not sent. Would notify:",
-      to
+      team
     );
     return { sent: false, error: "email_not_configured" };
   }
@@ -208,7 +233,36 @@ export async function sendInquiryEmail(data: InquiryEmailData): Promise<{
   try {
     const resend = new Resend(apiKey);
     const { subject, html, text } = renderInquiryEmail(data);
-    const { error } = await resend.emails.send({ from, to, subject, html, text });
+
+    let { error } = await resend.emails.send({
+      from,
+      to: team,
+      cc,
+      subject,
+      html,
+      text,
+    });
+
+    // In Resend test mode (no verified domain + onboarding@resend.dev sender),
+    // any recipient other than the account owner is rejected with a 403, which
+    // would drop the whole email. Retry to just the allowed owner so the team
+    // still gets notified. To also CC ${cc}, verify a domain at
+    // resend.com/domains and set RESEND_FROM to an address on that domain.
+    if (error && /only send testing emails|verify a domain/i.test(error.message)) {
+      const owner = error.message.match(/\(([^)]+@[^)]+)\)/)?.[1] ?? team;
+      console.warn(
+        `Resend is in test mode — delivering only to ${owner}. Verify a domain ` +
+          `to also reach: ${cc}.`
+      );
+      ({ error } = await resend.emails.send({
+        from,
+        to: owner,
+        subject,
+        html,
+        text,
+      }));
+    }
+
     if (error) {
       console.error("Resend error:", error);
       return { sent: false, error: error.message };

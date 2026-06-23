@@ -33,16 +33,11 @@ export function LogoReveal() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    // Plays on every load / refresh (only skipped for reduced-motion users).
     const reduce = window.matchMedia?.(
       "(prefers-reduced-motion: reduce)"
     ).matches;
-    let alreadySeen = false;
-    try {
-      alreadySeen = sessionStorage.getItem("indriya:intro") === "1";
-    } catch {
-      /* storage blocked — just play it */
-    }
-    if (reduce || alreadySeen) {
+    if (reduce) {
       setRemoved(true);
       return;
     }
@@ -52,11 +47,6 @@ export function LogoReveal() {
     if (!canvas || !ctx) {
       setRemoved(true);
       return;
-    }
-    try {
-      sessionStorage.setItem("indriya:intro", "1");
-    } catch {
-      /* ignore */
     }
 
     let cancelled = false;
